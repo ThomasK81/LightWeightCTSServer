@@ -6,7 +6,7 @@ A light weight Server for Perseus CTS XML files written in Go. This is a potenti
 2. Unpack it (You can rename it afterwards if you like)
 3. Open a Terminal/Commandline and cd into the unpacked (and optionally renamed) folder
 
-4. On Mac/Linux: start it up with `./UnixCTS` / on Windows `WindowsCTS.exe` (not tested yet)
+4. On Mac/Linux: start it up with `./UnixCTS` / on Windows `WindowsCTS.exe` (**update:** it's been tested. Just double-click on WindowsCTS.exe and it works.)
 
 ## Trouble-shooting
 
