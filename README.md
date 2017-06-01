@@ -28,6 +28,8 @@ On OSX/Linux you might have to tell your Operating system that `./UnixCTS` is an
 2. Copy it into the unzipped folder into the subfolder `static/OPP` (you can use Finder/Eplorer for this and drag&drop)
 3. Enjoy your text under http://localhost:8080/cts/full/ + [The FILENAME without.XML] and query the text as outlined above
 
+Here is video that demonstrates how easy it is to integrate new XML file: https://drive.google.com/file/d/0BzNW0LZy0RUOLU5jc2dEOE8ybHc/view?usp=sharing
+
 ## Modify Port and Source for XML and other stuff (for non-technical people point 3 is of interest).
 
 1. config.json is pretty much self-explicable. You can point the app to a web resource where CTS XML text are stored if you like though.
