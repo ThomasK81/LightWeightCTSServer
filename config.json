@@ -1,0 +1,5 @@
+{
+"host": "localhost",
+"port": ":8080",
+"xml_source": "http://localhost:8080/static/OPP/"
+}
