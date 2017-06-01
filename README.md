@@ -17,7 +17,7 @@ On OSX/Linux you might have to tell your Operating system that `./UnixCTS` is an
 1. Whole work: http://localhost:8080/cts/full/tlg0003.tlg001.perseus-grc2/
 2. Part of it: http://localhost:8080/cts/chunk/phi0448.phi001.perseus-lat2:1.1.2
 3. Range: http://localhost:8080/cts/range/tlg0085.tlg005.opp-grc3:1-3
-4. The Range command supports substrings in unicode: http://localhost:8080/cts/range/tlg0085.tlg005.opp-grc3/1@τῶνδ᾽-12@ἂν 
+4. The Range command supports substrings in unicode: http://localhost:8080/cts/range/tlg0085.tlg005.opp-grc3:1@τῶνδ᾽-12@ἂν 
 
 **!! Please take not of the `/full/` `/chunk/` `/range/` part of the http link !!**
 
