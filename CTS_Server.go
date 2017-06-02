@@ -15,6 +15,21 @@ import (
 	"strings"
 )
 
+type Capabilities struct {
+	ID   string `json:"ID"`
+	Author string `json:"Author"`
+	Title string `json:"Title"`
+}
+
+type Metadata struct {
+	Author []string `xml:"author"`
+	Title   []string `xml:"title"`
+}
+
+type Inventory struct {
+	Files []string `xml:"a"`
+}
+
 type ServerConfig struct {
 	Host      string `json:"host"`
 	Port      string `json:"port"`
@@ -34,6 +49,67 @@ type ParsedCTS struct {
 
 type CTSParams struct {
 	Sourcetext, StartID, EndID string
+}
+
+func DelFrSlice(strslice []string, feature string) []string{
+	var result []string
+	for i := range strslice {
+		if strings.Contains(strslice[i], feature) {
+			result = append(result, strslice[i])
+		}
+		}
+		return result
+}
+
+func BuildCapabilities(xmlbyte []byte, urn string, capabilities []Capabilities) []Capabilities {
+	var l Metadata
+	decoder := xml.NewDecoder(strings.NewReader(string(xmlbyte)))
+	for {
+		// Read tokens from the XML document in a stream.
+		token, _ := decoder.Token()
+		if token == nil {
+			break
+		}
+		switch Element := token.(type) {
+		case xml.StartElement:
+			if Element.Name.Local == "titleStmt" {
+				err := decoder.DecodeElement(&l, &Element)
+				if err != nil {
+					fmt.Println(err)
+				}
+				capabilities = append(capabilities, Capabilities{
+    			ID:   urn,
+    			Author: strings.Join(l.Author, ","),
+					Title: strings.Join(l.Title, ","),
+  		})
+				return capabilities
+						}
+		}
+}
+return capabilities
+}
+
+func ExtractInventory(xmlbyte []byte) []string {
+	var l Inventory
+	decoder := xml.NewDecoder(strings.NewReader(string(xmlbyte)))
+	for {
+		// Read tokens from the XML document in a stream.
+		token, _ := decoder.Token()
+		if token == nil {
+			break
+		}
+		switch Element := token.(type) {
+		case xml.StartElement:
+			if Element.Name.Local == "pre" {
+				err := decoder.DecodeElement(&l, &Element)
+				if err != nil {
+					fmt.Println(err)
+				}
+				return l.Files
+						}
+		}
+}
+return []string{"Parser failed"}
 }
 
 func LoadConfiguration(file string) ServerConfig {
@@ -373,12 +449,37 @@ func main() {
 	s := http.StripPrefix("/static/", http.FileServer(http.Dir("./static/")))
 	router.PathPrefix("/static/").Handler(s)
 	router.HandleFunc("/cts", CTSIndex)
+	router.HandleFunc("/GetCapabilities", GetCapabilities)
 	router.HandleFunc("/cts/full/{sourcetext}/", CTSShowWork)
 	router.HandleFunc("/cts/chunk/{sourcetext}:{ctsID}", CTSShow)
 	router.HandleFunc("/cts/range/{sourcetext}:{ctsID}-{ctsID2}", CTSShowRange)
 	router.HandleFunc("/{key}", serveTemplate)
 	log.Println("Listening at" + serverIP + "...")
 	log.Fatal(http.ListenAndServe(serverIP, router))
+}
+
+func GetCapabilities(w http.ResponseWriter, r *http.Request) {
+
+	confvar := LoadConfiguration("config.json")
+
+	data, err := getContent(confvar.XMLSource)
+	if err != nil {
+		fmt.Println("I felt a great disturbance in the Force, as if millions of requests suddenly cried out in terror and were suddenly silenced.")
+	}
+	Files := ExtractInventory(data)
+	Files = DelFrSlice(Files, ".xml")
+	var capabilities []Capabilities
+
+	for i := range Files {
+		http_req := "http://localhost:8080/static/OPP/" + Files[i]
+	data, err = getContent(http_req)
+	if err != nil {
+		fmt.Println("I felt a great disturbance in the Force, as if millions of requests suddenly cried out in terror and were suddenly silenced.")
+	}
+	capabilities = BuildCapabilities(data, strings.Split(Files[i], ".xml")[0],capabilities)
+}
+capabilitiesJson, _ := json.Marshal(capabilities)
+fmt.Fprintln(w, string(capabilitiesJson))
 }
 
 func CTSIndex(w http.ResponseWriter, r *http.Request) {
