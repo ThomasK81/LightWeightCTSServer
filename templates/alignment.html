@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<head>
+
+<style>
+.yourClass { color: grey;
+background-color: lightgrey;
+    border-radius: 1em;}
+</style>
+<link rel="stylesheet" href="http://bulma.io/css/bulma-docs.css">
+<!-- <link rel="stylesheet" href="/static/stylesheets/bulma.css"> -->
+<title>NWA</title>
+</head>
+<body>
+  <section class="hero">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column">
+          <p class="title">
+            CTS NWA
+          </p>
+          <p class="subtitle">
+            Needleman-Wunsch based Alignment of CTS Textnodes
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+<section>
+  <div class="container">
+    <div class="columns">
+      {{.AlignmentDivs}}
+    </div>
+  </div>
+</section>
+<section>
+  <div class="container">
+    <div class="columns">
+      <div class="column is-narrow">
+        <div class="box" style="width: 300px;">
+        <iframe src="http://openseadragon.github.io/openseadragonizer/?img=http%3A%2F%2Fomeka.dh.uni-leipzig.de%2Ffiles%2Foriginal%2F11%2Furn_cite_nbh_Kurukshetra_KuS%2FKuS_202_98v_P1000549.JPG&encoded=true" style="width: 250px;">
+        </iframe>
+      </div>
+      </div>
+      <div class="column is-narrow">
+        <div class="box" style="width: 300px;">
+          <iframe src="http://openseadragon.github.io/openseadragonizer/?img=http%3A%2F%2Fomeka.dh.uni-leipzig.de%2Ffiles%2Foriginal%2F11%2Furn_cite_nbh_Kurukshetra_KuS%2FKuS_202_98v_P1000549.JPG&encoded=true" style="width: 250px;">
+          </iframe>
+      </div>
+      </div>
+      <div class="column is-narrow">
+        <div class="box" style="width: 300px;">
+          <iframe src="http://openseadragon.github.io/openseadragonizer/?img=http%3A%2F%2Fomeka.dh.uni-leipzig.de%2Ffiles%2Foriginal%2F11%2Furn_cite_nbh_Kurukshetra_KuS%2FKuS_202_98v_P1000549.JPG&encoded=true" style="width: 250px;">
+          </iframe>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="columns">
+      <div class="column is-narrow">
+<div class="field" style="width: 950px;">
+  <p class="control">
+    <textarea class="textarea" style = "height: 400px">
+#NEXUS
+Begin data;
+Dimensions ntax=4 nchar=15;
+Format datatype=dna missing=? gap=-;
+Matrix
+Species1   atgctagctagctcg
+Species2   atgcta??tag-tag
+Species3   atgttagctag-tgg
+Species4   atgttagctag-tag
+;
+End;
+    </textarea>
+  </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</body>
+<script src="https://hypothes.is/embed.js" async></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+$('w').hover(function(){
+    //alert( $(this).attr("title"));
+    $("w[alignment='" + $(this).attr("alignment") + "']").addClass('yourClass');
+}, function() {
+    $("w[alignment='" + $(this).attr("alignment") + "']").removeClass('yourClass');
+});
+</script>
+</html>

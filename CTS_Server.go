@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/aebruno/nwalgo"
+	"strconv"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -14,6 +16,28 @@ import (
 	"regexp"
 	"strings"
 )
+
+type Word struct {
+  Appearance string
+  Id int
+}
+
+type Node struct {
+	URN      []string `json:"urn"`
+	Text     []string `json:"text,omitempty"`
+	Previous []string `json:"previous"`
+	Next     []string `json:"next"`
+	Index    int      `json:"sequence"`
+}
+
+type NodeResponse struct {
+	RequestUrn []string `json:"requestUrn"`
+	Status     string   `json:"status"`
+	Service    string   `json:"service"`
+	Message    string   `json:"message,omitempty"`
+	URN        []string `json:"urns,omitempty"`
+	Nodes      []Node   `json:""`
+}
 
 type Capabilities struct {
 	ID   string `json:"ID"`
@@ -34,11 +58,13 @@ type ServerConfig struct {
 	Host      string `json:"host"`
 	Port      string `json:"port"`
 	XMLSource string `json:"xml_source"`
+	CEXSource string `json:"xml_source"`
 }
 
 type CTSXMLPage struct {
 	Title   template.HTML
 	Passage template.HTML
+	AlignmentDivs template.HTML
 }
 
 type ParsedCTS struct {
@@ -49,6 +75,78 @@ type ParsedCTS struct {
 
 type CTSParams struct {
 	Sourcetext, StartID, EndID string
+}
+
+func maxfloat(floatslice []float64) int {
+  max := floatslice[0]
+  maxindex := 0
+  for i, value := range floatslice {
+    if value > max {
+      max = value
+      maxindex = i
+    }
+  }
+  return maxindex
+}
+
+func nwastrings(collection []string) string{
+  start := `<div class="column is-narrow">
+    <div class="box" style="width: 300px;">
+`
+end := `</div>
+</div>`
+var output string
+    for i:= range collection {
+      collection[i] = strings.ToLower(collection[i])
+    }
+    basestring := strings.Fields(collection[0])
+    var basetext []Word
+    var comparetext []Word
+    for i := range basestring {
+      basetext = append(basetext, Word{Appearance: basestring[i], Id: i + 1})
+    }
+		output = start
+    for i := range basetext {
+      output = output + "<w alignment=\"" + strconv.Itoa(basetext[i].Id) + "\">" + basetext[i].Appearance + "</w>" + "\n"
+    }
+    output = output + end
+    for i:= 0; i < len(collection) - 1; i++ {
+      comparestring := strings.Fields(collection[i+1])
+      comparetext = []Word{}
+      for i := range comparestring {
+        comparetext = append(comparetext, Word{Appearance: comparestring[i]})
+      }
+      aln1, aln2, score := nwalgo.Align(collection[0], collection[i+1], 1, -1, -1)
+      aligned1 := strings.Fields(aln1)
+      aligned2 := strings.Fields(aln2)
+      var score_range []float64
+      var index int
+      for j := range aligned1 {
+        score_range = []float64{}
+      for i,_:= range aligned2 {
+        aln1, aln2, score = nwalgo.Align(aligned1[j], aligned2[i], 1, -1, -1)
+        var penalty float64
+        switch{
+        case i > j:
+            penalty = float64((i - j)) / 2.0
+          case i < j:
+            penalty = float64((j - i)) / 2.0
+          default:
+            penalty = 0
+        }
+        var f float64 = (float64(score) - penalty)/ float64(len(aln1))
+        score_range = append(score_range, f)
+      }
+      index = maxfloat(score_range)
+      comparetext[index].Id = j + 1
+    }
+		output = output + start
+    for i := range comparetext {
+      output = output + "<w alignment=\"" + strconv.Itoa(comparetext[i].Id) + "\">" + comparetext[i].Appearance + "</w>" + "\n"
+    }
+    output = output + end
+    }
+		return output
 }
 
 func DelFrSlice(strslice []string, feature string) []string{
@@ -453,9 +551,37 @@ func main() {
 	router.HandleFunc("/cts/full/{sourcetext}/", CTSShowWork)
 	router.HandleFunc("/cts/chunk/{sourcetext}:{ctsID}", CTSShow)
 	router.HandleFunc("/cts/range/{sourcetext}:{ctsID}-{ctsID2}", CTSShowRange)
+	router.HandleFunc("/cex/nwa/{urns}", NWAcex)
 	router.HandleFunc("/{key}", serveTemplate)
 	log.Println("Listening at" + serverIP + "...")
 	log.Fatal(http.ListenAndServe(serverIP, router))
+}
+
+func NWAcex(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	urns := strings.Split(vars["urns"], "+")
+	var nodelist NodeResponse
+	var lookatnodes []string
+	for i:= range urns{
+		urlstring := "http://127.0.0.1:8080/nyaya/texts/" + urns[i]
+		res, err := http.Get(urlstring)
+
+		if err != nil {
+    panic(err.Error())
+	}
+	body, err := ioutil.ReadAll(res.Body)
+if err != nil {
+    panic(err.Error())
+}
+		err = json.Unmarshal(body, &nodelist)
+		lookatnodes = append(lookatnodes, nodelist.Nodes[0].Text[0])
+	}
+	output := nwastrings(lookatnodes)
+	alignment := template.HTML(output)
+	p := &CTSXMLPage{AlignmentDivs: alignment}
+	lp := filepath.Join("templates", "alignment.html")
+	t, _ := template.ParseFiles(lp)
+	t.Execute(w, p)
 }
 
 func GetCapabilities(w http.ResponseWriter, r *http.Request) {
