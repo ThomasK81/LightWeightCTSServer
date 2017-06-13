@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/aebruno/nwalgo"
-	"strconv"
+	// "strconv"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -90,12 +90,21 @@ func maxfloat(floatslice []float64) int {
 }
 
 func nwastrings(collection []string) string{
-  start := `<div class="column is-narrow">
-    <div class="box" style="width: 300px;">
+  start := `	<div class="tbody">
+		<form class="tr">
 `
-end := `</div>
-</div>`
+start2 := `	<div class="thead">
+		<div class="tr">
+`
+end := `<div class="td action"><button type="button" onclick="edit(this);">edit</button></div>
+		</form></div>`
+		end2 := `</div>
+	</div>`
+
+	button := `<button type="button" onclick="edit(this);">edit</button>`
+
 var output string
+
     for i:= range collection {
       collection[i] = strings.ToLower(collection[i])
     }
@@ -105,11 +114,17 @@ var output string
     for i := range basestring {
       basetext = append(basetext, Word{Appearance: basestring[i], Id: i + 1})
     }
-		output = start
+		output = start + button
     for i := range basetext {
-      output = output + "<w alignment=\"" + strconv.Itoa(basetext[i].Id) + "\">" + basetext[i].Appearance + "</w>" + "\n"
+      output = output + "<div class=\"td\">" + basetext[i].Appearance + "</div>" + "\n"
     }
     output = output + end
+		output = output + start2 + "<div class=\"td\">Edit</div>" + "\n"
+		for i := range basetext {
+      output = output + "<div class=\"td\">" + basetext[i].Appearance + "</div>" + "\n"
+    }
+		output = output + end2
+
     for i:= 0; i < len(collection) - 1; i++ {
       comparestring := strings.Fields(collection[i+1])
       comparetext = []Word{}
@@ -140,9 +155,9 @@ var output string
       index = maxfloat(score_range)
       comparetext[index].Id = j + 1
     }
-		output = output + start
+		output = output + start + button
     for i := range comparetext {
-      output = output + "<w alignment=\"" + strconv.Itoa(comparetext[i].Id) + "\">" + comparetext[i].Appearance + "</w>" + "\n"
+      output = output + "<div class=\"td\">" + comparetext[i].Appearance + "</div>" + "\n"
     }
     output = output + end
     }
