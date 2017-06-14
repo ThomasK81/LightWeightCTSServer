@@ -21,6 +21,11 @@ On OSX/Linux you might have to tell your Operating system that `./UnixCTS_V002` 
 
 **!! Please take not of the `/full/` `/chunk/` `/range/` part of the http link !!**
 
+## Alpheios Dictionaries
+
+Alpheios' dictionaries are now implemented. **Tested in Chrome/Firefox/Safari. Works in Chrome and Firefox. Does not work in Safari.**
+![Alpheios Dictionary](https://raw.githubusercontent.com/ThomasK81/LightWeightCTSServer/master/Alpheios.png)
+
 ## Adding your own CTS XML
 
 1. Download your favourite Leipzig/Perseus CTS XML file (for a selection have a look here: http://opengreekandlatin.github.io/First1KGreek/)
