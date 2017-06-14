@@ -1,6 +1,6 @@
 {
 "host": "localhost",
 "port": ":8000",
-"xml_source": "http://localhost:8080/static/OPP/",
+"xml_source": "http://localhost:8000/static/OPP/",
 "cex_source": "https://raw.githubusercontent.com/ThomasK81/CTSTextservice/master/cex/"
 }

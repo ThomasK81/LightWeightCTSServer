@@ -18,8 +18,8 @@ import (
 )
 
 type Word struct {
-  Appearance string
-  Id int
+	Appearance string
+	Id         int
 }
 
 type Node struct {
@@ -40,14 +40,14 @@ type NodeResponse struct {
 }
 
 type Capabilities struct {
-	ID   string `json:"ID"`
+	ID     string `json:"ID"`
 	Author string `json:"Author"`
-	Title string `json:"Title"`
+	Title  string `json:"Title"`
 }
 
 type Metadata struct {
 	Author []string `xml:"author"`
-	Title   []string `xml:"title"`
+	Title  []string `xml:"title"`
 }
 
 type Inventory struct {
@@ -58,12 +58,12 @@ type ServerConfig struct {
 	Host      string `json:"host"`
 	Port      string `json:"port"`
 	XMLSource string `json:"xml_source"`
-	CEXSource string `json:"xml_source"`
+	CEXSource string `json:"cex_source"`
 }
 
 type CTSXMLPage struct {
-	Title   template.HTML
-	Passage template.HTML
+	Title         template.HTML
+	Passage       template.HTML
 	AlignmentDivs template.HTML
 }
 
@@ -78,100 +78,100 @@ type CTSParams struct {
 }
 
 func maxfloat(floatslice []float64) int {
-  max := floatslice[0]
-  maxindex := 0
-  for i, value := range floatslice {
-    if value > max {
-      max = value
-      maxindex = i
-    }
-  }
-  return maxindex
+	max := floatslice[0]
+	maxindex := 0
+	for i, value := range floatslice {
+		if value > max {
+			max = value
+			maxindex = i
+		}
+	}
+	return maxindex
 }
 
-func nwastrings(collection []string) string{
-  start := `	<div class="tbody">
+func nwastrings(collection []string) string {
+	start := `	<div class="tbody">
 		<form class="tr">
 `
-start2 := `	<div class="thead">
+	start2 := `	<div class="thead">
 		<div class="tr">
 `
-end := `<div class="td action"><button type="button" onclick="edit(this);">edit</button></div>
+	end := `<div class="td action"><button type="button" onclick="edit(this);">edit</button></div>
 		</form></div>`
-		end2 := `</div>
+	end2 := `</div>
 	</div>`
 
 	button := `<button type="button" onclick="edit(this);">edit</button>`
 
-var output string
+	var output string
 
-    for i:= range collection {
-      collection[i] = strings.ToLower(collection[i])
-    }
-    basestring := strings.Fields(collection[0])
-    var basetext []Word
-    var comparetext []Word
-    for i := range basestring {
-      basetext = append(basetext, Word{Appearance: basestring[i], Id: i + 1})
-    }
-		output = start + button
-    for i := range basetext {
-      output = output + "<div class=\"td\">" + basetext[i].Appearance + "</div>" + "\n"
-    }
-    output = output + end
-		output = output + start2 + "<div class=\"td\">Edit</div>" + "\n"
-		for i := range basetext {
-      output = output + "<div class=\"td\">" + basetext[i].Appearance + "</div>" + "\n"
-    }
-		output = output + end2
+	for i := range collection {
+		collection[i] = strings.ToLower(collection[i])
+	}
+	basestring := strings.Fields(collection[0])
+	var basetext []Word
+	var comparetext []Word
+	for i := range basestring {
+		basetext = append(basetext, Word{Appearance: basestring[i], Id: i + 1})
+	}
+	output = start + button
+	for i := range basetext {
+		output = output + "<div class=\"td\">" + basetext[i].Appearance + "</div>" + "\n"
+	}
+	output = output + end
+	output = output + start2 + "<div class=\"td\">Edit</div>" + "\n"
+	for i := range basetext {
+		output = output + "<div class=\"td\">" + basetext[i].Appearance + "</div>" + "\n"
+	}
+	output = output + end2
 
-    for i:= 0; i < len(collection) - 1; i++ {
-      comparestring := strings.Fields(collection[i+1])
-      comparetext = []Word{}
-      for i := range comparestring {
-        comparetext = append(comparetext, Word{Appearance: comparestring[i]})
-      }
-      aln1, aln2, score := nwalgo.Align(collection[0], collection[i+1], 1, -1, -1)
-      aligned1 := strings.Fields(aln1)
-      aligned2 := strings.Fields(aln2)
-      var score_range []float64
-      var index int
-      for j := range aligned1 {
-        score_range = []float64{}
-      for i,_:= range aligned2 {
-        aln1, aln2, score = nwalgo.Align(aligned1[j], aligned2[i], 1, -1, -1)
-        var penalty float64
-        switch{
-        case i > j:
-            penalty = float64((i - j)) / 2.0
-          case i < j:
-            penalty = float64((j - i)) / 2.0
-          default:
-            penalty = 0
-        }
-        var f float64 = (float64(score) - penalty)/ float64(len(aln1))
-        score_range = append(score_range, f)
-      }
-      index = maxfloat(score_range)
-      comparetext[index].Id = j + 1
-    }
+	for i := 0; i < len(collection)-1; i++ {
+		comparestring := strings.Fields(collection[i+1])
+		comparetext = []Word{}
+		for i := range comparestring {
+			comparetext = append(comparetext, Word{Appearance: comparestring[i]})
+		}
+		aln1, aln2, score := nwalgo.Align(collection[0], collection[i+1], 1, -1, -1)
+		aligned1 := strings.Fields(aln1)
+		aligned2 := strings.Fields(aln2)
+		var score_range []float64
+		var index int
+		for j := range aligned1 {
+			score_range = []float64{}
+			for i, _ := range aligned2 {
+				aln1, aln2, score = nwalgo.Align(aligned1[j], aligned2[i], 1, -1, -1)
+				var penalty float64
+				switch {
+				case i > j:
+					penalty = float64((i - j)) / 2.0
+				case i < j:
+					penalty = float64((j - i)) / 2.0
+				default:
+					penalty = 0
+				}
+				var f float64 = (float64(score) - penalty) / float64(len(aln1))
+				score_range = append(score_range, f)
+			}
+			index = maxfloat(score_range)
+			comparetext[index].Id = j + 1
+		}
 		output = output + start + button
-    for i := range comparetext {
-      output = output + "<div class=\"td\">" + comparetext[i].Appearance + "</div>" + "\n"
-    }
-    output = output + end
-    }
-		return output
+		for i := range comparetext {
+			output = output + "<div class=\"td\">" + comparetext[i].Appearance + "</div>" + "\n"
+		}
+		output = output + end
+	}
+	return output
 }
 
-func DelFrSlice(strslice []string, feature string) []string{
+func DelFrSlice(strslice []string, feature string) []string {
 	var result []string
 	for i := range strslice {
 		if strings.Contains(strslice[i], feature) {
 			result = append(result, strslice[i])
 		}
-		}
-		return result
+	}
+	return result
 }
 
 func BuildCapabilities(xmlbyte []byte, urn string, capabilities []Capabilities) []Capabilities {
@@ -191,15 +191,15 @@ func BuildCapabilities(xmlbyte []byte, urn string, capabilities []Capabilities) 
 					fmt.Println(err)
 				}
 				capabilities = append(capabilities, Capabilities{
-    			ID:   urn,
-    			Author: strings.Join(l.Author, ","),
-					Title: strings.Join(l.Title, ","),
-  		})
+					ID:     urn,
+					Author: strings.Join(l.Author, ","),
+					Title:  strings.Join(l.Title, ","),
+				})
 				return capabilities
-						}
+			}
 		}
-}
-return capabilities
+	}
+	return capabilities
 }
 
 func ExtractInventory(xmlbyte []byte) []string {
@@ -219,10 +219,10 @@ func ExtractInventory(xmlbyte []byte) []string {
 					fmt.Println(err)
 				}
 				return l.Files
-						}
+			}
 		}
-}
-return []string{"Parser failed"}
+	}
+	return []string{"Parser failed"}
 }
 
 func LoadConfiguration(file string) ServerConfig {
@@ -577,17 +577,17 @@ func NWAcex(w http.ResponseWriter, r *http.Request) {
 	urns := strings.Split(vars["urns"], "+")
 	var nodelist NodeResponse
 	var lookatnodes []string
-	for i:= range urns{
+	for i := range urns {
 		urlstring := "http://127.0.0.1:8080/nyaya/texts/" + urns[i]
 		res, err := http.Get(urlstring)
 
 		if err != nil {
-    panic(err.Error())
-	}
-	body, err := ioutil.ReadAll(res.Body)
-if err != nil {
-    panic(err.Error())
-}
+			panic(err.Error())
+		}
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			panic(err.Error())
+		}
 		err = json.Unmarshal(body, &nodelist)
 		lookatnodes = append(lookatnodes, nodelist.Nodes[0].Text[0])
 	}
@@ -612,15 +612,15 @@ func GetCapabilities(w http.ResponseWriter, r *http.Request) {
 	var capabilities []Capabilities
 
 	for i := range Files {
-		http_req := "http://localhost:8080/static/OPP/" + Files[i]
-	data, err = getContent(http_req)
-	if err != nil {
-		fmt.Println("I felt a great disturbance in the Force, as if millions of requests suddenly cried out in terror and were suddenly silenced.")
+		http_req := "http://localhost:8000/static/OPP/" + Files[i]
+		data, err = getContent(http_req)
+		if err != nil {
+			fmt.Println("I felt a great disturbance in the Force, as if millions of requests suddenly cried out in terror and were suddenly silenced.")
+		}
+		capabilities = BuildCapabilities(data, strings.Split(Files[i], ".xml")[0], capabilities)
 	}
-	capabilities = BuildCapabilities(data, strings.Split(Files[i], ".xml")[0],capabilities)
-}
-capabilitiesJson, _ := json.Marshal(capabilities)
-fmt.Fprintln(w, string(capabilitiesJson))
+	capabilitiesJson, _ := json.Marshal(capabilities)
+	fmt.Fprintln(w, string(capabilitiesJson))
 }
 
 func CTSIndex(w http.ResponseWriter, r *http.Request) {
