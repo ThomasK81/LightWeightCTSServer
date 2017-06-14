@@ -566,6 +566,7 @@ func main() {
 	router.HandleFunc("/cts/full/{sourcetext}/", CTSShowWork)
 	router.HandleFunc("/cts/chunk/{sourcetext}:{ctsID}", CTSShow)
 	router.HandleFunc("/cts/range/{sourcetext}:{ctsID}-{ctsID2}", CTSShowRange)
+	router.HandleFunc("/cex/{source}/{urns}", NWAtext)
 	router.HandleFunc("/cex/nwa/{urns}", NWAcex)
 	router.HandleFunc("/{key}", serveTemplate)
 	log.Println("Listening at" + serverIP + "...")
@@ -595,6 +596,40 @@ func NWAcex(w http.ResponseWriter, r *http.Request) {
 	alignment := template.HTML(output)
 	p := &CTSXMLPage{AlignmentDivs: alignment}
 	lp := filepath.Join("templates", "alignment.html")
+	t, _ := template.ParseFiles(lp)
+	t.Execute(w, p)
+}
+
+func NWAtext(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	urns := vars["urns"]
+	source := vars["source"]
+	var nodelist NodeResponse
+	var lookatnodes []string
+	var identifiers []string
+	urlstring := "http://127.0.0.1:8080/" + source + "/texts/" + urns
+	res, err := http.Get(urlstring)
+
+	if err != nil {
+		panic(err.Error())
+	}
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+	err = json.Unmarshal(body, &nodelist)
+	for j := range nodelist.Nodes {
+		lookatnodes = append(lookatnodes, nodelist.Nodes[j].Text[0])
+		identifiers = append(identifiers, nodelist.Nodes[j].URN[0])
+	}
+
+	var output string
+	for i := range lookatnodes {
+		output = output + "<div n=\"" + identifiers[i] + "\">" + lookatnodes[i] + "</div>"
+	}
+	passage := template.HTML(output)
+	p := &CTSXMLPage{Passage: passage}
+	lp := filepath.Join("templates", "layout.html")
 	t, _ := template.ParseFiles(lp)
 	t.Execute(w, p)
 }
