@@ -6,18 +6,18 @@ A light weight Server for Perseus CTS XML files written in Go. This is a potenti
 2. Unpack it (You can rename it afterwards if you like)
 3. Open a Terminal/Commandline and cd into the unpacked (and optionally renamed) folder
 
-4. On Mac/Linux: start it up with `./UnixCTS` / on Windows `WindowsCTS.exe` (**update:** it's been tested. Just double-click on WindowsCTS.exe and it works.)
+4. On Mac/Linux: start it up with `./UnixCTS_V002` / on Windows `WindowsCTS_V002.exe` 
 
 ## Trouble-shooting
 
-On OSX/Linux you might have to tell your Operating system that `./UnixCTS` is an executable with `chmod +x UnixCTS`
+On OSX/Linux you might have to tell your Operating system that `./UnixCTS_V002` is an executable with `chmod +x UnixCTS_V002`
 
 ## Try it with your favourite browser
 
-1. Whole work: http://localhost:8080/cts/full/tlg0003.tlg001.perseus-grc2/
-2. Part of it: http://localhost:8080/cts/chunk/phi0448.phi001.perseus-lat2:1.1.2
-3. Range: http://localhost:8080/cts/range/tlg0085.tlg005.opp-grc3:1-3
-4. The Range command supports substrings in unicode: http://localhost:8080/cts/range/tlg0085.tlg005.opp-grc3:1@τῶνδ᾽-12@ἂν 
+1. Whole work: http://localhost:8000/cts/full/tlg0003.tlg001.perseus-grc2/
+2. Part of it: http://localhost:8000/cts/chunk/phi0448.phi001.perseus-lat2:1.1.2
+3. Range: http://localhost:8000/cts/range/tlg0085.tlg005.opp-grc3:1-3
+4. The Range command supports substrings in unicode: http://localhost:8000/cts/range/tlg0085.tlg005.opp-grc3:1@τῶνδ᾽-12@ἂν 
 
 **!! Please take not of the `/full/` `/chunk/` `/range/` part of the http link !!**
 
